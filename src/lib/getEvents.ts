@@ -9,7 +9,6 @@ export interface Event {
   imageUrl: string;
   isBoss: boolean;
   formUrl?: string;
-  type?: string;
   emoji?: string; // Custom emoji from Firestore (optional)
 }
 
@@ -28,7 +27,6 @@ export async function getEvents(): Promise<Event[]> {
         dataId: data.id,
         finalId: eventId,
         name: data.name,
-        type: data.type,
         emoji: data.emoji,
       });
       
@@ -40,7 +38,6 @@ export async function getEvents(): Promise<Event[]> {
         imageUrl: data.imageUrl || "",
         isBoss: data.isBoss || false,
         formUrl: data.formUrl || "",
-        type: data.type || "social",
         emoji: data.emoji || undefined, // Read emoji from Firestore if available
       } as Event;
     });
@@ -51,7 +48,6 @@ export async function getEvents(): Promise<Event[]> {
     console.log("✅ Events loaded:", sortedEvents.map(e => ({ 
       id: e.id, 
       name: e.name, 
-      type: e.type,
       emoji: e.emoji 
     })));
     

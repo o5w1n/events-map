@@ -199,31 +199,7 @@ export default function EventMap({ events }: EventMapProps) {
   };
 
   const getEventEmoji = (event: Event) => {
-    if (event.emoji) return event.emoji;
-    switch (event.type) {
-      case "social":
-        return "🎉";
-      case "sports":
-        return "⚽";
-      case "academic":
-        return "📚";
-      case "creative":
-        return "🎨";
-      case "health":
-        return "🎗️";
-      case "cultural":
-        return "🌍";
-      case "music":
-        return "🎵";
-      case "food":
-        return "🍽️";
-      case "networking":
-        return "🤝";
-      case "workshop":
-        return "🛠️";
-      default:
-        return "✨";
-    }
+    return event.emoji || "✨";
   };
 
   const pathD = sortedEvents
