@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Event } from "@/lib/getEvents";
 
 interface EventMapProps {
@@ -275,9 +275,9 @@ export default function EventMap({ events }: EventMapProps) {
               <span
                 key={star}
                 className={`text-sm ${
-                  star <= Math.ceil((unlockedCount / sortedEvents.length) * 3)
-                    ? "text-[var(--gold)] animate-twinkle"
-                    : "text-[var(--border)]"
+                  star <= Math.ceil((unlockedCount / sortedEvents.length) * 3) ?
+                    "text-[var(--gold)] animate-twinkle"
+                  : "text-[var(--border)]"
                 }`}
                 style={{ animationDelay: `${star * 0.3}s` }}
               >
@@ -412,9 +412,9 @@ export default function EventMap({ events }: EventMapProps) {
                       relative flex flex-col items-center justify-center rounded-full
                       border-2 transition-smooth cursor-pointer
                       ${
-                        locked
-                          ? "bg-[var(--background)] border-[var(--border)] opacity-60"
-                          : "bg-[var(--card)] border-[var(--primary)] hover:scale-105 shadow-md glow-primary"
+                        locked ?
+                          "bg-[var(--background)] border-[var(--border)] opacity-60"
+                        : "bg-[var(--card)] border-[var(--primary)] hover:scale-105 shadow-md glow-primary"
                       }
                       ${!locked && "animate-float"}
                     `}
@@ -424,13 +424,12 @@ export default function EventMap({ events }: EventMapProps) {
                       animationDelay: `${index * 0.2}s`,
                     }}
                   >
-                    {locked ? (
+                    {locked ?
                       <span className="text-2xl opacity-50">🔒</span>
-                    ) : (
-                      <>
+                    : <>
                         <span className="text-2xl">{getEventEmoji(event)}</span>
                       </>
-                    )}
+                    }
 
                     {/* Boss indicator */}
                     {event.isBoss && !locked && (
@@ -446,9 +445,9 @@ export default function EventMap({ events }: EventMapProps) {
                       className={`
                       text-xs font-medium truncate
                       ${
-                        locked
-                          ? "text-[var(--muted-light)]"
-                          : "text-[var(--foreground)]"
+                        locked ?
+                          "text-[var(--muted-light)]"
+                        : "text-[var(--foreground)]"
                       }
                     `}
                     >
@@ -484,9 +483,9 @@ export default function EventMap({ events }: EventMapProps) {
               className={`
               relative px-6 pt-8 pb-10 text-center
               ${
-                isEventLocked(selectedEvent)
-                  ? "bg-gradient-to-b from-[var(--border)] to-[var(--card)]"
-                  : "bg-gradient-to-b from-[var(--primary)] to-[var(--primary-light)]"
+                isEventLocked(selectedEvent) ?
+                  "bg-gradient-to-b from-[var(--border)] to-[var(--card)]"
+                : "bg-gradient-to-b from-[var(--primary)] to-[var(--primary-light)]"
               }
             `}
             >
@@ -501,16 +500,16 @@ export default function EventMap({ events }: EventMapProps) {
                 className={`
                 inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 shadow-lg
                 ${
-                  isEventLocked(selectedEvent)
-                    ? "bg-[var(--muted-light)]"
-                    : "bg-white"
+                  isEventLocked(selectedEvent) ?
+                    "bg-[var(--muted-light)]"
+                  : "bg-white"
                 }
               `}
               >
                 <span className="text-3xl">
-                  {isEventLocked(selectedEvent)
-                    ? "🔒"
-                    : getEventEmoji(selectedEvent)}
+                  {isEventLocked(selectedEvent) ?
+                    "🔒"
+                  : getEventEmoji(selectedEvent)}
                 </span>
               </div>
 
@@ -533,15 +532,15 @@ export default function EventMap({ events }: EventMapProps) {
                 className={`
                 inline-block px-3 py-1 rounded-full text-xs font-medium
                 ${
-                  isEventLocked(selectedEvent)
-                    ? "bg-[var(--muted)] text-white"
-                    : "bg-white/20 text-white"
+                  isEventLocked(selectedEvent) ?
+                    "bg-[var(--muted)] text-white"
+                  : "bg-white/20 text-white"
                 }
               `}
               >
-                {selectedEvent.isBoss
-                  ? "Featured Event"
-                  : `Event ${selectedEvent.id}`}
+                {selectedEvent.isBoss ?
+                  "Featured Event"
+                : `Event ${selectedEvent.id}`}
               </span>
             </div>
 
@@ -573,13 +572,13 @@ export default function EventMap({ events }: EventMapProps) {
                 className={`
                 rounded-xl p-4 text-center mb-4
                 ${
-                  isEventLocked(selectedEvent)
-                    ? "bg-[var(--background)] border border-[var(--border)]"
-                    : "bg-green-50 border border-green-100"
+                  isEventLocked(selectedEvent) ?
+                    "bg-[var(--background)] border border-[var(--border)]"
+                  : "bg-green-50 border border-green-100"
                 }
               `}
               >
-                {isEventLocked(selectedEvent) ? (
+                {isEventLocked(selectedEvent) ?
                   <p className="text-[var(--muted)] text-sm">
                     🔒 Opens{" "}
                     {selectedEvent.date?.toDate().toLocaleDateString("en-US", {
@@ -587,11 +586,10 @@ export default function EventMap({ events }: EventMapProps) {
                       day: "numeric",
                     })}
                   </p>
-                ) : (
-                  <p className="text-[var(--success)] text-sm font-medium">
+                : <p className="text-[var(--success)] text-sm font-medium">
                     ✓ Open for registration
                   </p>
-                )}
+                }
               </div>
 
               {/* CTA */}

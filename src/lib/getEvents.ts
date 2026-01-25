@@ -9,6 +9,7 @@ export interface Event {
   imageUrl: string;
   isBoss: boolean;
   formUrl?: string;
+  type?: string;
   emoji?: string; // Custom emoji from Firestore (optional)
 }
 
