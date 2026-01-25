@@ -570,7 +570,7 @@ export default function EventMap({ events }: EventMapProps) {
               </div>
 
               {/* CTA */}
-              {selectedEvent.formUrl && !isEventLocked(selectedEvent) && (
+              {selectedEvent.formUrl && (
                 <a
                   href={selectedEvent.formUrl}
                   target="_blank"
