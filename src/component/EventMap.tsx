@@ -1,4 +1,5 @@
 "use client";
+// Force redeploy
 
 import { useState, useRef, useEffect } from "react";
 import { Event } from "@/lib/getEvents";
