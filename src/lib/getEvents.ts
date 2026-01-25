@@ -9,7 +9,7 @@ export interface Event {
   imageUrl: string;
   isBoss: boolean;
   formUrl?: string;
-  type?: string;
+  emoji?: string; // Custom emoji from Firestore (optional)
 }
 
 export async function getEvents(): Promise<Event[]> {
@@ -28,6 +28,7 @@ export async function getEvents(): Promise<Event[]> {
         finalId: eventId,
         name: data.name,
         type: data.type,
+        emoji: data.emoji,
       });
       
       return {
@@ -35,18 +36,23 @@ export async function getEvents(): Promise<Event[]> {
         name: data.name || "Unnamed Event",
         description: data.description || "No description",
         date: data.date,
-        imageUrl: data.imageUrl || "https://via.placeholder.com/400x300",
+        imageUrl: data.imageUrl || "",
         isBoss: data.isBoss || false,
         formUrl: data.formUrl || "",
         type: data.type || "social",
+        emoji: data.emoji || undefined, // Read emoji from Firestore if available
       } as Event;
     });
 
     // Sort by ID
     const sortedEvents = events.sort((a, b) => a.id - b.id);
 
-    console.log("✅ Events BEFORE sorting:", events.map(e => ({ id: e.id, name: e.name, type: e.type })));
-    console.log("✅ Events AFTER sorting:", sortedEvents.map(e => ({ id: e.id, name: e.name, type: e.type })));
+    console.log("✅ Events loaded:", sortedEvents.map(e => ({ 
+      id: e.id, 
+      name: e.name, 
+      type: e.type,
+      emoji: e.emoji 
+    })));
     
     return sortedEvents;
     
@@ -55,4 +61,3 @@ export async function getEvents(): Promise<Event[]> {
     return [];
   }
 }
-

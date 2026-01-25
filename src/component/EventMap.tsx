@@ -1,810 +1,460 @@
-// import { useState, useRef, useEffect } from "react";
-// import { Event } from "@/lib/getEvents";
+"use client";
 
-// interface CandyCrushMapProps {
-//   events: Event[];
-// }
-
-// export default function EventMap({ events }: CandyCrushMapProps) {
-//   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-//   const [zoom, setZoom] = useState(1);
-//   const [isMobile, setIsMobile] = useState(false);
-//   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-//   // Detect mobile device
-//   useEffect(() => {
-//     const checkMobile = () => {
-//       setIsMobile(window.innerWidth < 768);
-//     };
-//     checkMobile();
-//     window.addEventListener("resize", checkMobile);
-//     return () => window.removeEventListener("resize", checkMobile);
-//   }, []);
-
-//   // Simple sort by ID
-//   const sortedEvents = [...events].sort((a, b) => a.id - b.id);
-
-//   // Responsive spacing based on device
-//   const eventSpacing = isMobile ? 200 : 300;
-//   const circleSize = isMobile ? "w-24 h-24" : "w-36 h-36";
-
-//   // Generate path points for HORIZONTAL winding road
-//   const generatePathPoints = (index: number, total: number) => {
-//     const baseX = (isMobile ? 150 : 200) + index * eventSpacing;
-//     const amplitude = isMobile ? 80 : 120;
-//     const frequency = 0.6;
-
-//     const offsetY = Math.sin(index * frequency) * amplitude;
-//     const centerY = isMobile ? 200 : 300;
-//     const y = centerY + offsetY;
-
-//     return { x: baseX, y: y };
-//   };
-
-//   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.2, 2));
-//   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.2, 0.6));
-//   const handleResetZoom = () => setZoom(1);
-
-//   const totalWidth =
-//     sortedEvents.length * eventSpacing + (isMobile ? 300 : 400);
-//   const containerHeight = isMobile ? 400 : 600;
-
-//   return (
-//     <div
-//       className={`relative w-full bg-gradient-to-r from-red-200 via-pink-200 to-red-100 rounded-2xl overflow-hidden shadow-2xl border-4 border-red-300 ${
-//         isMobile ? "h-[450px]" : "h-[700px]"
-//       }`}
-//     >
-//       {/* Zoom Controls - Hidden on mobile for cleaner UI */}
-//       {!isMobile && (
-//         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg z-20 flex flex-col gap-2">
-//           <button
-//             onClick={handleZoomIn}
-//             className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-xl transition flex items-center justify-center shadow-lg"
-//             title="Zoom In"
-//           >
-//             +
-//           </button>
-//           <button
-//             onClick={handleResetZoom}
-//             className="w-10 h-10 bg-gradient-to-br from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold text-xs transition flex items-center justify-center shadow-lg"
-//             title="Reset Zoom"
-//           >
-//             100%
-//           </button>
-//           <button
-//             onClick={handleZoomOut}
-//             className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-xl transition flex items-center justify-center shadow-lg"
-//             title="Zoom Out"
-//           >
-//             −
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Mobile Zoom Controls - Compact version */}
-//       {isMobile && (
-//         <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-xl p-2 shadow-lg z-20 flex gap-1">
-//           <button
-//             onClick={handleZoomOut}
-//             className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 active:from-red-600 active:to-red-700 text-white rounded-lg font-bold text-lg transition shadow-lg"
-//           >
-//             −
-//           </button>
-//           <button
-//             onClick={handleZoomIn}
-//             className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 active:from-red-600 active:to-red-700 text-white rounded-lg font-bold text-lg transition shadow-lg"
-//           >
-//             +
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Scrollable container with zoom */}
-//       <div
-//         ref={scrollContainerRef}
-//         className="relative w-full h-full overflow-auto scrollbar-thin scrollbar-thumb-red-500 scrollbar-track-transparent"
-//         style={{
-//           cursor: "grab",
-//           WebkitOverflowScrolling: "touch",
-//         }}
-//       >
-//         <div
-//           className="relative transition-transform duration-300"
-//           style={{
-//             width: `${totalWidth}px`,
-//             height: `${containerHeight}px`,
-//             transform: isMobile ? "scale(1)" : `scale(${zoom})`,
-//             transformOrigin: "top left",
-//           }}
-//         >
-//           {/* Decorative clouds */}
-//           <div
-//             className={`absolute bg-white rounded-full opacity-70 blur-md ${
-//               isMobile
-//                 ? "w-20 h-12 top-10 left-50"
-//                 : "w-32 h-20 top-20 left-100"
-//             }`}
-//           ></div>
-//           <div
-//             className={`absolute bg-white rounded-full opacity-60 blur-md ${
-//               isMobile
-//                 ? "w-24 h-14 top-60 right-100"
-//                 : "w-40 h-24 top-100 right-200"
-//             }`}
-//           ></div>
-//           {!isMobile && (
-//             <>
-//               <div className="absolute top-400 left-500 w-36 h-22 bg-white rounded-full opacity-50 blur-md"></div>
-//               <div className="absolute top-150 right-400 w-28 h-18 bg-white rounded-full opacity-65 blur-md"></div>
-//             </>
-//           )}
-
-//           {/* SVG Path connecting all events */}
-//           <svg
-//             className="absolute inset-0 w-full h-full pointer-events-none"
-//             style={{ zIndex: 1 }}
-//           >
-//             <defs>
-//               <linearGradient
-//                 id="pathGradient"
-//                 x1="0%"
-//                 y1="0%"
-//                 x2="100%"
-//                 y2="0%"
-//               >
-//                 <stop
-//                   offset="0%"
-//                   style={{ stopColor: "#DC2626", stopOpacity: 1 }}
-//                 />
-//                 <stop
-//                   offset="50%"
-//                   style={{ stopColor: "#F43F5E", stopOpacity: 1 }}
-//                 />
-//                 <stop
-//                   offset="100%"
-//                   style={{ stopColor: "#E11D48", stopOpacity: 1 }}
-//                 />
-//               </linearGradient>
-//             </defs>
-//             <path
-//               d={sortedEvents
-//                 .map((event, index) => {
-//                   const { x, y } = generatePathPoints(
-//                     index,
-//                     sortedEvents.length
-//                   );
-//                   return `${index === 0 ? "M" : "L"} ${x} ${y}`;
-//                 })
-//                 .join(" ")}
-//               fill="none"
-//               stroke="url(#pathGradient)"
-//               strokeWidth={isMobile ? "12" : "16"}
-//               strokeLinecap="round"
-//               strokeDasharray={isMobile ? "20,10" : "25,15"}
-//               className="drop-shadow-lg"
-//               style={{
-//                 filter: "drop-shadow(0 4px 8px rgba(220, 38, 38, 0.3))",
-//               }}
-//             />
-//           </svg>
-
-//           {/* Event Nodes */}
-//           <div className="relative w-full h-full" style={{ zIndex: 2 }}>
-//             {sortedEvents.map((event, index) => {
-//               const eventDate = event.date ? event.date.toDate() : new Date();
-//               const now = new Date();
-//               const isLocked = event.date ? now < eventDate : false;
-//               const position = generatePathPoints(index, sortedEvents.length);
-
-//               return (
-//                 <div
-//                   key={`event-${event.id}`}
-//                   className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
-//                   style={{
-//                     left: `${position.x}px`,
-//                     top: `${position.y}px`,
-//                   }}
-//                 >
-//                   {/* Event Node */}
-//                   <button
-//                     onClick={() => setSelectedEvent(event)}
-//                     className={`relative group ${
-//                       isLocked
-//                         ? "cursor-not-allowed"
-//                         : "cursor-pointer active:scale-95 md:hover:scale-110"
-//                     } transition-transform duration-300`}
-//                   >
-//                     {/* Glow effect for unlocked events - RED CANDY GLOW */}
-//                     {!isLocked && (
-//                       <div
-//                         className={`absolute inset-0 rounded-full bg-gradient-to-r from-red-500 to-pink-500 opacity-70 animate-pulse ${
-//                           isMobile ? "blur-xl" : "blur-2xl"
-//                         }`}
-//                       ></div>
-//                     )}
-
-//                     {/* Main circle */}
-//                     <div
-//                       className={`relative ${circleSize} rounded-full flex flex-col items-center justify-center border-4 shadow-2xl transition-all ${
-//                         event.isBoss
-//                           ? "bg-gradient-to-br from-red-400 via-pink-400 to-rose-400 border-red-600 ring-4 ring-red-500 ring-offset-2 md:ring-offset-4"
-//                           : isLocked
-//                           ? "bg-gradient-to-br from-gray-300 to-gray-400 border-gray-500"
-//                           : "bg-gradient-to-br from-red-300 via-pink-300 to-rose-300 border-red-500"
-//                       }`}
-//                     >
-//                       {/* {Large emoji instead of image */} */}
-//                       <div
-//                         className={`${
-//                           isMobile ? "text-4xl" : "text-6xl"
-//                         } drop-shadow-lg`}
-//                       >
-//                         {event.isBoss
-//                           ? "👑"
-//                           : event.name.includes("Welcome")
-//                           ? "🎉"
-//                           : event.name.includes("Dance")
-//                           ? "💃"
-//                           : "🎊"}
-//                       </div>
-
-
-
-//                       {/* Lock overlay */}
-//                       {isLocked && (
-//                         <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
-//                           <span className={isMobile ? "text-4xl" : "text-6xl"}>
-//                             🔒
-//                           </span>
-//                         </div>
-//                       )}
-
-//                       {/* Boss crown */}
-//                       {event.isBoss && !isLocked && (
-//                         <div
-//                           className={`absolute drop-shadow-2xl animate-bounce ${
-//                             isMobile ? "-top-8 text-5xl" : "-top-12 text-7xl"
-//                           }`}
-//                         >
-//                           👑
-//                         </div>
-//                       )}
-
-//                       {/* Event number badge - RED CANDY */}
-//                       <div
-//                         className={`absolute bg-white rounded-full flex items-center justify-center border-4 border-red-500 font-bold text-red-600 shadow-lg ${
-//                           isMobile
-//                             ? "-bottom-2 w-10 h-10 text-base"
-//                             : "-bottom-4 w-14 h-14 text-xl"
-//                         }`}
-//                       >
-//                         {event.id}
-//                       </div>
-//                     </div>
-
-//                     {/* Event name label - RED CANDY */}
-//                     <div
-//                       className={`absolute left-1/2 transform -translate-x-1/2 text-center ${
-//                         isMobile ? "-bottom-16 w-32" : "-bottom-24 w-48"
-//                       }`}
-//                     >
-//                       <p
-//                         className={`font-bold text-white drop-shadow-xl bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg ${
-//                           isMobile ? "text-xs px-2 py-1" : "text-base px-4 py-2"
-//                         }`}
-//                       >
-//                         {event.name}
-//                       </p>
-//                     </div>
-
-//                     {/* Stars for unlocked events */}
-//                     {!isLocked && (
-//                       <div
-//                         className={`absolute left-1/2 transform -translate-x-1/2 flex gap-1 ${
-//                           isMobile ? "-top-6" : "-top-10"
-//                         }`}
-//                       >
-//                         {[1, 2, 3].map((star) => (
-//                           <span
-//                             key={`star-${event.id}-${star}`}
-//                             className={`text-red-500 drop-shadow-lg ${
-//                               isMobile ? "text-xl" : "text-3xl"
-//                             }`}
-//                           >
-//                             💎
-//                           </span>
-//                         ))}
-//                       </div>
-//                     )}
-//                   </button>
-//                 </div>
-//               );
-//             })}
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Event Details Modal - Mobile optimized - RED CANDY */}
-//       {selectedEvent && (
-//         <div
-//           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-//           onClick={() => setSelectedEvent(null)}
-//         >
-//           <div
-//             className={`bg-white rounded-3xl shadow-2xl transform scale-100 animate-in relative border-4 border-red-300 ${
-//               isMobile ? "p-4 max-w-sm w-full" : "p-6 max-w-md w-full"
-//             }`}
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             {/* Close button */}
-//             <button
-//               onClick={() => setSelectedEvent(null)}
-//               className={`absolute bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full font-bold hover:from-red-600 hover:to-red-700 active:from-red-700 active:to-red-800 transition flex items-center justify-center shadow-lg ${
-//                 isMobile
-//                   ? "top-2 right-2 w-8 h-8 text-xl"
-//                   : "top-4 right-4 w-10 h-10 text-2xl"
-//               }`}
-//             >
-//               ×
-//             </button>
-
-//             {/* Large Emoji Display */}
-//             <div className={`text-center mb-4 ${isMobile ? "text-7xl" : "text-9xl"}`}>
-//               {selectedEvent.isBoss
-//                 ? "👑"
-//                 : selectedEvent.name.includes("Welcome")
-//                 ? "🎉"
-//                 : selectedEvent.name.includes("Dance")
-//                 ? "💃"
-//                 : "🎊"}
-//             </div>
-
-//             {/* Boss badge */}
-//             {selectedEvent.isBoss && (
-//               <div
-//                 className={`bg-gradient-to-r from-red-400 to-pink-400 text-red-900 rounded-full text-center font-bold animate-pulse border-2 border-red-500 ${
-//                   isMobile ? "px-3 py-1 text-sm mb-2" : "px-4 py-2 mb-3"
-//                 }`}
-//               >
-//                 👑 BOSS EVENT 👑
-//               </div>
-//             )}
-
-//             {/* Event details */}
-//             <h2
-//               className={`font-bold text-red-600 text-center ${
-//                 isMobile ? "text-xl mb-1" : "text-3xl mb-2"
-//               }`}
-//             >
-//               {selectedEvent.name}
-//             </h2>
-
-//             <p
-//               className={`text-gray-700 text-center leading-relaxed ${
-//                 isMobile ? "text-sm mb-3" : "mb-4"
-//               }`}
-//             >
-//               {selectedEvent.description}
-//             </p>
-
-//             {selectedEvent.date && (
-//               <div
-//                 className={`bg-red-100 rounded-xl border-2 border-red-300 ${
-//                   isMobile ? "p-2 mb-3" : "p-3 mb-4"
-//                 }`}
-//               >
-//                 <p
-//                   className={`text-red-700 font-medium text-center ${
-//                     isMobile ? "text-xs" : "text-sm"
-//                   }`}
-//                 >
-//                   📅{" "}
-//                   {selectedEvent.date.toDate().toLocaleDateString("en-US", {
-//                     weekday: isMobile ? undefined : "long",
-//                     month: "short",
-//                     day: "numeric",
-//                     year: "numeric",
-//                     hour: "numeric",
-//                     minute: "2-digit",
-//                   })}
-//                 </p>
-//               </div>
-//             )}
-
-//             {/* Lock status */}
-// {selectedEvent.date && new Date() < selectedEvent.date.toDate() ? (
-//   <div className={`bg-red-100 border-2 border-red-400 rounded-xl text-center ${isMobile ? "p-3 mb-3" : "p-4 mb-4"}`}>
-//     <p className={`text-red-700 font-bold ${isMobile ? "text-sm" : ""}`}>
-//       🔒 Unlocks {selectedEvent.date.toDate().toLocaleDateString()}
-//     </p>
-//   </div>
-// ) : (
-//   <div className={`bg-red-100 border-2 border-red-400 rounded-xl text-center ${isMobile ? "p-3 mb-3" : "p-4 mb-4"}`}>
-//     <p className={`text-red-700 font-bold ${isMobile ? "text-sm" : ""}`}>
-//       ✅ Event Available Now!
-//     </p>
-//   </div>
-// )}
-
-//             {/* Sign-Up Button */}
-//             {selectedEvent.formUrl && (
-//               <a
-//                 href={selectedEvent.formUrl}
-//                 target="_blank"
-//                 rel="noopener noreferrer"
-//                 className={`block w-full text-center bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg ${
-//                   isMobile ? "px-4 py-2 text-sm" : "px-6 py-3 text-base"
-//                 }`}
-//               >
-//                 🎫 Sign Up Now
-//               </a>
-//             )}
-//           </div>
-//         </div>
-//       )}
-//       {/* Scroll indicator - Mobile optimized */}
-//       <div
-//         className={`absolute left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border-2 border-red-300 ${
-//           isMobile ? "bottom-2 px-4 py-2" : "bottom-6 px-6 py-3"
-//         }`}
-//       >
-//         <p
-//           className={`font-bold text-red-600 flex items-center gap-2 ${
-//             isMobile ? "text-xs" : "text-sm"
-//           }`}
-//         >
-//           <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-500 opacity-75"></span>
-//           <span className="relative">
-//             {isMobile ? "← Swipe →" : "← Scroll to explore →"}
-//           </span>
-//         </p>
-//       </div>
-
-//       {/* Event Counter - Mobile optimized */}
-//       <div
-//         className={`absolute right-6 bg-gradient-to-r from-red-500 to-pink-500 backdrop-blur-sm rounded-full shadow-lg text-white ${
-//           isMobile ? "bottom-2 px-3 py-1" : "bottom-6 px-4 py-2"
-//         }`}
-//       >
-//         <p className={`font-bold ${isMobile ? "text-xs" : "text-sm"}`}>
-//           {sortedEvents.length} Events
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Event } from "@/lib/getEvents";
 
-interface CandyCrushMapProps {
+interface EventMapProps {
   events: Event[];
 }
 
-export default function EventMap({ events }: CandyCrushMapProps) {
+// --- DOODLE COMPONENTS ---
+const DoodleStar = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z" />
+  </svg>
+);
+
+const DoodleSparkle = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 0L13.5 8.5L22 10L13.5 11.5L12 20L10.5 11.5L2 10L10.5 8.5L12 0Z" />
+  </svg>
+);
+
+const DoodleBook = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+  </svg>
+);
+
+const DoodleGradCap = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+  </svg>
+);
+
+const DoodleBulb = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+    <path d="M12 2a7 7 0 0 0-7 7c0 2 0 3 2 4.5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1.5c2-1.5 2-2.5 2-4.5a7 7 0 0 0-7-7z" />
+  </svg>
+);
+
+const DoodleNote = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+  </svg>
+);
+
+const DoodleBalloon = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M6 9a6 6 0 1 0 12 0c0-3.87-2.67-6-6-6S6 5.13 6 9z" />
+    <path d="M12 15v5" />
+    <path d="m14 20-2 2-2-2" />
+  </svg>
+);
+
+const DoodleCircle = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => (
+  <svg
+    className={className}
+    style={style}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeDasharray="4 2"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="12" cy="12" r="10" />
+  </svg>
+);
+
+export default function EventMap({ events }: EventMapProps) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [zoom, setZoom] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Detect mobile device
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Simple sort by ID
   const sortedEvents = [...events].sort((a, b) => a.id - b.id);
 
-  // Responsive spacing based on device
-  const eventSpacing = isMobile ? 200 : 300;
-  const circleSize = isMobile ? "w-24 h-24" : "w-36 h-36";
+  const spacing = isMobile ? 160 : 220;
+  const nodeSize = isMobile ? 72 : 88;
 
-  // Get emoji based on event type
-  const getEventEmoji = (eventType?: string): string => {
-    switch (eventType) {
+  const getPosition = (index: number) => {
+    const x = (isMobile ? 120 : 180) + index * spacing;
+    const amplitude = isMobile ? 70 : 100;
+    const y = (isMobile ? 200 : 260) + Math.sin(index * 0.65) * amplitude;
+    return { x, y };
+  };
+
+  const isEventLocked = (event: Event) => {
+    if (!event.date) return false;
+    return new Date() < event.date.toDate();
+  };
+
+  const getEventEmoji = (event: Event) => {
+    if (event.emoji) return event.emoji;
+    switch (event.type) {
       case "social":
         return "🎉";
       case "sports":
         return "⚽";
       case "academic":
-        return "🧠";
+        return "📚";
       case "creative":
-        return "🎬";
+        return "🎨";
+      case "health":
+        return "🎗️";
+      case "cultural":
+        return "🌍";
+      case "music":
+        return "🎵";
+      case "food":
+        return "🍽️";
+      case "networking":
+        return "🤝";
+      case "workshop":
+        return "🛠️";
       default:
-        return "🎊";
+        return "✨";
     }
   };
 
-  // Generate path points for HORIZONTAL winding road
-  const generatePathPoints = (index: number, total: number) => {
-    const baseX = (isMobile ? 150 : 200) + index * eventSpacing;
-    const amplitude = isMobile ? 80 : 120;
-    const frequency = 0.6;
+  const pathD = sortedEvents
+    .map((_, i) => {
+      const { x, y } = getPosition(i);
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
 
-    const offsetY = Math.sin(index * frequency) * amplitude;
-    const centerY = isMobile ? 200 : 300;
-    const y = centerY + offsetY;
+  const totalWidth = sortedEvents.length * spacing + (isMobile ? 240 : 360);
+  const containerHeight = isMobile ? 420 : 520;
 
-    return { x: baseX, y: y };
-  };
+  const unlockedCount = sortedEvents.filter((e) => !isEventLocked(e)).length;
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.2, 2));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.2, 0.6));
-  const handleResetZoom = () => setZoom(1);
-
-  const totalWidth =
-    sortedEvents.length * eventSpacing + (isMobile ? 300 : 400);
-  const containerHeight = isMobile ? 400 : 600;
+  // Available doodles
+  const Doodles = [
+    DoodleBook,
+    DoodleGradCap,
+    DoodleBulb, // Education
+    DoodleStar,
+    DoodleSparkle,
+    DoodleNote,
+    DoodleBalloon, // Fun/Party
+    DoodleCircle, // Decoration
+  ];
 
   return (
-    <div
-      className={`relative w-full bg-gradient-to-r from-red-200 via-pink-200 to-red-100 rounded-2xl overflow-hidden shadow-2xl border-4 border-red-300 ${
-        isMobile ? "h-[450px]" : "h-[700px]"
-      }`}
-    >
-      {/* Zoom Controls - Hidden on mobile for cleaner UI */}
-      {!isMobile && (
-        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg z-20 flex flex-col gap-2">
-          <button
-            onClick={handleZoomIn}
-            className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-xl transition flex items-center justify-center shadow-lg"
-            title="Zoom In"
-          >
-            +
-          </button>
-          <button
-            onClick={handleResetZoom}
-            className="w-10 h-10 bg-gradient-to-br from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold text-xs transition flex items-center justify-center shadow-lg"
-            title="Reset Zoom"
-          >
-            100%
-          </button>
-          <button
-            onClick={handleZoomOut}
-            className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-xl transition flex items-center justify-center shadow-lg"
-            title="Zoom Out"
-          >
-            −
-          </button>
+    <div className="relative w-full rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--card)] shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-light)] flex items-center justify-center">
+            <span className="text-white text-lg">📅</span>
+          </div>
+          <div>
+            <p className="font-semibold text-[var(--foreground)]">
+              Semester Roadmap
+            </p>
+            <p className="text-xs text-[var(--muted)]">
+              {sortedEvents.length} events planned
+            </p>
+          </div>
         </div>
-      )}
 
-      {/* Mobile Zoom Controls - Compact version */}
-      {isMobile && (
-        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-xl p-2 shadow-lg z-20 flex gap-1">
-          <button
-            onClick={handleZoomOut}
-            className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 active:from-red-600 active:to-red-700 text-white rounded-lg font-bold text-lg transition shadow-lg"
-          >
-            −
-          </button>
-          <button
-            onClick={handleZoomIn}
-            className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 active:from-red-600 active:to-red-700 text-white rounded-lg font-bold text-lg transition shadow-lg"
-          >
-            +
-          </button>
+        {/* Progress */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            {[1, 2, 3].map((star) => (
+              <span
+                key={star}
+                className={`text-sm ${
+                  star <= Math.ceil((unlockedCount / sortedEvents.length) * 3)
+                    ? "text-[var(--gold)] animate-twinkle"
+                    : "text-[var(--border)]"
+                }`}
+                style={{ animationDelay: `${star * 0.3}s` }}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <div className="text-right">
+            <span className="text-sm font-semibold text-[var(--primary)]">
+              {unlockedCount}
+            </span>
+            <span className="text-sm text-[var(--muted)]">
+              /{sortedEvents.length}
+            </span>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Scrollable container with zoom */}
+      {/* Map container */}
       <div
         ref={scrollContainerRef}
-        className="relative w-full h-full overflow-auto scrollbar-thin scrollbar-thumb-red-500 scrollbar-track-transparent"
-        style={{
-          cursor: "grab",
-          WebkitOverflowScrolling: "touch",
-        }}
+        className="relative w-full overflow-x-auto overflow-y-hidden bg-gradient-to-b from-[var(--background)] to-[var(--card)]"
+        style={{ height: `${containerHeight}px` }}
       >
         <div
-          className="relative transition-transform duration-300"
-          style={{
-            width: `${totalWidth}px`,
-            height: `${containerHeight}px`,
-            transform: isMobile ? "scale(1)" : `scale(${zoom})`,
-            transformOrigin: "top left",
-          }}
+          className="relative"
+          style={{ width: `${totalWidth}px`, height: `${containerHeight}px` }}
         >
-          {/* Decorative clouds */}
-          <div
-            className={`absolute bg-white rounded-full opacity-70 blur-md ${
-              isMobile
-                ? "w-20 h-12 top-10 left-50"
-                : "w-32 h-20 top-20 left-100"
-            }`}
-          ></div>
-          <div
-            className={`absolute bg-white rounded-full opacity-60 blur-md ${
-              isMobile
-                ? "w-24 h-14 top-60 right-100"
-                : "w-40 h-24 top-100 right-200"
-            }`}
-          ></div>
-          {!isMobile && (
-            <>
-              <div className="absolute top-400 left-500 w-36 h-22 bg-white rounded-full opacity-50 blur-md"></div>
-              <div className="absolute top-150 right-400 w-28 h-18 bg-white rounded-full opacity-65 blur-md"></div>
-            </>
-          )}
+          {/* BACKGROUND DOODLES LAYER */}
+          {/* Dynamically generates doodles along the entire width based on events */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {sortedEvents.map((_, i) => {
+              // Render 4 doodles around each event position for more density
+              const doodlesForSegment = [0, 1, 2, 3].map((offset) => {
+                const seed = i * 13 + offset;
+                const DoodleComp = Doodles[seed % Doodles.length];
+                const { x } = getPosition(i);
 
-          {/* SVG Path connecting all events */}
+                // Wider spread: -250px to +250px from event center
+                const xPos = x + ((seed * 47) % 500) - 250;
+
+                // Random Y (5% to 95%)
+                const yPos = ((seed * 73) % 90) + 5;
+
+                // Smaller size: 15px to 40px
+                const size = 15 + (seed % 25);
+
+                const rotation = (seed * 30) % 360;
+                // Slightly lower opacity for better blending
+                const opacity = 0.05 + (seed % 15) / 100; // 0.05 to 0.20
+
+                // Colors: Alternate between primary, muted, gold, foreground
+                const colors = [
+                  "var(--primary)",
+                  "var(--muted)",
+                  "var(--gold)",
+                  "var(--foreground)",
+                ];
+                const color = colors[seed % colors.length];
+
+                return (
+                  <DoodleComp
+                    key={`${i}-${offset}`}
+                    className="absolute"
+                    style={{
+                      left: `${xPos}px`,
+                      top: `${yPos}%`,
+                      width: `${size}px`,
+                      height: `${size}px`,
+                      color: color,
+                      opacity: opacity,
+                      transform: `rotate(${rotation}deg)`,
+                    }}
+                  />
+                );
+              });
+              return doodlesForSegment;
+            })}
+          </div>
+
+          {/* SVG Path */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none"
             style={{ zIndex: 1 }}
           >
-            <defs>
-              <linearGradient
-                id="pathGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="0%"
-              >
-                <stop
-                  offset="0%"
-                  style={{ stopColor: "#DC2626", stopOpacity: 1 }}
-                />
-                <stop
-                  offset="50%"
-                  style={{ stopColor: "#F43F5E", stopOpacity: 1 }}
-                />
-                <stop
-                  offset="100%"
-                  style={{ stopColor: "#E11D48", stopOpacity: 1 }}
-                />
-              </linearGradient>
-            </defs>
+            {/* Base path */}
             <path
-              d={sortedEvents
-                .map((event, index) => {
-                  const { x, y } = generatePathPoints(
-                    index,
-                    sortedEvents.length
-                  );
-                  return `${index === 0 ? "M" : "L"} ${x} ${y}`;
-                })
-                .join(" ")}
+              d={pathD}
               fill="none"
-              stroke="url(#pathGradient)"
-              strokeWidth={isMobile ? "12" : "16"}
+              stroke="var(--border)"
+              strokeWidth={isMobile ? 6 : 8}
               strokeLinecap="round"
-              strokeDasharray={isMobile ? "20,10" : "25,15"}
-              className="drop-shadow-lg"
-              style={{
-                filter: "drop-shadow(0 4px 8px rgba(220, 38, 38, 0.3))",
-              }}
+            />
+
+            {/* Colored path */}
+            <path
+              d={pathD}
+              fill="none"
+              stroke="var(--primary)"
+              strokeWidth={isMobile ? 3 : 4}
+              strokeLinecap="round"
+              strokeDasharray="12 8"
+              className="animate-path"
+              opacity="0.5"
             />
           </svg>
 
           {/* Event Nodes */}
           <div className="relative w-full h-full" style={{ zIndex: 2 }}>
             {sortedEvents.map((event, index) => {
-              const eventDate = event.date ? event.date.toDate() : new Date();
-              const now = new Date();
-              const isLocked = event.date ? now < eventDate : false;
-              const position = generatePathPoints(index, sortedEvents.length);
+              const position = getPosition(index);
+              const locked = isEventLocked(event);
 
               return (
                 <div
-                  key={`event-${event.id}`}
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
-                  style={{
-                    left: `${position.x}px`,
-                    top: `${position.y}px`,
-                  }}
+                  key={event.id}
+                  className="absolute transform -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: position.x, top: position.y }}
                 >
-                  {/* Event Node */}
+                  {/* Pulse ring for unlocked */}
+                  {!locked && (
+                    <div
+                      className="absolute inset-0 rounded-full bg-[var(--primary)] animate-ring"
+                      style={{ width: nodeSize, height: nodeSize }}
+                    />
+                  )}
+
+                  {/* Node */}
                   <button
                     onClick={() => setSelectedEvent(event)}
-                    className={`relative group ${
-                      isLocked
-                        ? "cursor-not-allowed"
-                        : "cursor-pointer active:scale-95 md:hover:scale-110"
-                    } transition-transform duration-300`}
+                    className={`
+                      relative flex flex-col items-center justify-center rounded-full
+                      border-2 transition-smooth cursor-pointer
+                      ${
+                        locked
+                          ? "bg-[var(--background)] border-[var(--border)] opacity-60"
+                          : "bg-[var(--card)] border-[var(--primary)] hover:scale-105 shadow-md glow-primary"
+                      }
+                      ${!locked && "animate-float"}
+                    `}
+                    style={{
+                      width: nodeSize,
+                      height: nodeSize,
+                      animationDelay: `${index * 0.2}s`,
+                    }}
                   >
-                    {/* Glow effect for unlocked events - RED CANDY GLOW */}
-                    {!isLocked && (
-                      <div
-                        className={`absolute inset-0 rounded-full bg-gradient-to-r from-red-500 to-pink-500 opacity-70 animate-pulse ${
-                          isMobile ? "blur-xl" : "blur-2xl"
-                        }`}
-                      ></div>
+                    {locked ? (
+                      <span className="text-2xl opacity-50">🔒</span>
+                    ) : (
+                      <>
+                        <span className="text-2xl">{getEventEmoji(event)}</span>
+                      </>
                     )}
 
-                    {/* Main circle */}
-                    <div
-                      className={`relative ${circleSize} rounded-full flex flex-col items-center justify-center border-4 shadow-2xl transition-all ${
-                        event.isBoss
-                          ? "bg-gradient-to-br from-red-400 via-pink-400 to-rose-400 border-red-600 ring-4 ring-red-500 ring-offset-2 md:ring-offset-4"
-                          : isLocked
-                          ? "bg-gradient-to-br from-gray-300 to-gray-400 border-gray-500"
-                          : "bg-gradient-to-br from-red-300 via-pink-300 to-rose-300 border-red-500"
-                      }`}
-                    >
-                      {/* Large emoji based on type */}
-                      <div
-                        className={`${
-                          isMobile ? "text-4xl" : "text-6xl"
-                        } drop-shadow-lg`}
-                      >
-                        {event.isBoss ? "👑" : getEventEmoji(event.type)}
-                      </div>
-
-                      {/* Lock overlay */}
-                      {isLocked && (
-                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
-                          <span className={isMobile ? "text-4xl" : "text-6xl"}>
-                            🔒
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Boss crown */}
-                      {event.isBoss && !isLocked && (
-                        <div
-                          className={`absolute drop-shadow-2xl animate-bounce ${
-                            isMobile ? "-top-8 text-5xl" : "-top-12 text-7xl"
-                          }`}
-                        >
-                          👑
-                        </div>
-                      )}
-
-                      {/* Event number badge - RED CANDY */}
-                      <div
-                        className={`absolute bg-white rounded-full flex items-center justify-center border-4 border-red-500 font-bold text-red-600 shadow-lg ${
-                          isMobile
-                            ? "-bottom-2 w-10 h-10 text-base"
-                            : "-bottom-4 w-14 h-14 text-xl"
-                        }`}
-                      >
-                        {event.id}
-                      </div>
-                    </div>
-
-                    {/* Event name label - RED CANDY */}
-                    <div
-                      className={`absolute left-1/2 transform -translate-x-1/2 text-center ${
-                        isMobile ? "-bottom-16 w-32" : "-bottom-24 w-48"
-                      }`}
-                    >
-                      <p
-                        className={`font-bold text-white drop-shadow-xl bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg ${
-                          isMobile ? "text-xs px-2 py-1" : "text-base px-4 py-2"
-                        }`}
-                      >
-                        {event.name}
-                      </p>
-                    </div>
-
-                    {/* Stars for unlocked events */}
-                    {!isLocked && (
-                      <div
-                        className={`absolute left-1/2 transform -translate-x-1/2 flex gap-1 ${
-                          isMobile ? "-top-6" : "-top-10"
-                        }`}
-                      >
-                        {[1, 2, 3].map((star) => (
-                          <span
-                            key={`star-${event.id}-${star}`}
-                            className={`text-red-500 drop-shadow-lg ${
-                              isMobile ? "text-xl" : "text-3xl"
-                            }`}
-                          >
-                            💎
-                          </span>
-                        ))}
+                    {/* Boss indicator */}
+                    {event.isBoss && !locked && (
+                      <div className="absolute -top-2 -right-1 w-5 h-5 rounded-full bg-[var(--gold)] flex items-center justify-center shadow-sm">
+                        <span className="text-[10px]">👑</span>
                       </div>
                     )}
                   </button>
+
+                  {/* Label */}
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-4 w-28 md:w-32 text-center">
+                    <p
+                      className={`
+                      text-xs font-medium truncate
+                      ${
+                        locked
+                          ? "text-[var(--muted-light)]"
+                          : "text-[var(--foreground)]"
+                      }
+                    `}
+                    >
+                      {event.name}
+                    </p>
+                  </div>
                 </div>
               );
             })}
@@ -812,163 +462,153 @@ export default function EventMap({ events }: CandyCrushMapProps) {
         </div>
       </div>
 
-      {/* Event Details Modal - Mobile optimized - RED CANDY */}
+      {/* Footer */}
+      <div className="flex items-center justify-center py-3 border-t border-[var(--border)] bg-[var(--background)]">
+        <p className="text-[var(--muted)] text-xs">
+          ← Scroll to explore all events →
+        </p>
+      </div>
+
+      {/* Modal */}
       {selectedEvent && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
           onClick={() => setSelectedEvent(null)}
         >
           <div
-            className={`bg-white rounded-3xl shadow-2xl transform scale-100 animate-in relative border-4 border-red-300 ${
-              isMobile ? "p-4 max-w-sm w-full" : "p-6 max-w-md w-full"
-            }`}
+            className="relative w-full max-w-sm rounded-2xl bg-[var(--card)] shadow-xl overflow-hidden hover-lift"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
-            <button
-              onClick={() => setSelectedEvent(null)}
-              className={`absolute bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full font-bold hover:from-red-600 hover:to-red-700 active:from-red-700 active:to-red-800 transition flex items-center justify-center shadow-lg ${
-                isMobile
-                  ? "top-2 right-2 w-8 h-8 text-xl"
-                  : "top-4 right-4 w-10 h-10 text-2xl"
-              }`}
+            {/* Header */}
+            <div
+              className={`
+              relative px-6 pt-8 pb-10 text-center
+              ${
+                isEventLocked(selectedEvent)
+                  ? "bg-gradient-to-b from-[var(--border)] to-[var(--card)]"
+                  : "bg-gradient-to-b from-[var(--primary)] to-[var(--primary-light)]"
+              }
+            `}
             >
-              ×
-            </button>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/30 transition-smooth"
+              >
+                ✕
+              </button>
 
-            {/* Large Emoji Display */}
-            <div className={`text-center mb-4 ${isMobile ? "text-7xl" : "text-9xl"}`}>
-              {selectedEvent.isBoss ? "👑" : getEventEmoji(selectedEvent.type)}
+              <div
+                className={`
+                inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 shadow-lg
+                ${
+                  isEventLocked(selectedEvent)
+                    ? "bg-[var(--muted-light)]"
+                    : "bg-white"
+                }
+              `}
+              >
+                <span className="text-3xl">
+                  {isEventLocked(selectedEvent)
+                    ? "🔒"
+                    : getEventEmoji(selectedEvent)}
+                </span>
+              </div>
+
+              {/* Stars for unlocked */}
+              {!isEventLocked(selectedEvent) && (
+                <div className="flex justify-center gap-1 mb-2">
+                  {[1, 2, 3].map((star) => (
+                    <span
+                      key={star}
+                      className="text-base text-[var(--gold)] animate-twinkle"
+                      style={{ animationDelay: `${star * 0.15}s` }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <span
+                className={`
+                inline-block px-3 py-1 rounded-full text-xs font-medium
+                ${
+                  isEventLocked(selectedEvent)
+                    ? "bg-[var(--muted)] text-white"
+                    : "bg-white/20 text-white"
+                }
+              `}
+              >
+                {selectedEvent.isBoss
+                  ? "Featured Event"
+                  : `Event ${selectedEvent.id}`}
+              </span>
             </div>
 
-            {/* Boss badge */}
-            {selectedEvent.isBoss && (
+            {/* Content */}
+            <div className="px-6 py-5 -mt-4 bg-[var(--card)] rounded-t-2xl relative">
+              <h2 className="text-lg font-bold text-[var(--foreground)] text-center mb-2">
+                {selectedEvent.name}
+              </h2>
+
+              <p className="text-[var(--muted)] text-sm text-center leading-relaxed mb-4">
+                {selectedEvent.description}
+              </p>
+
+              {selectedEvent.date && (
+                <div className="flex items-center justify-center gap-2 text-sm text-[var(--muted)] mb-4 pb-4 border-b border-[var(--border)]">
+                  <span>📅</span>
+                  <span>
+                    {selectedEvent.date.toDate().toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+              )}
+
+              {/* Status */}
               <div
-                className={`bg-gradient-to-r from-red-400 to-pink-400 text-red-900 rounded-full text-center font-bold animate-pulse border-2 border-red-500 ${
-                  isMobile ? "px-3 py-1 text-sm mb-2" : "px-4 py-2 mb-3"
-                }`}
+                className={`
+                rounded-xl p-4 text-center mb-4
+                ${
+                  isEventLocked(selectedEvent)
+                    ? "bg-[var(--background)] border border-[var(--border)]"
+                    : "bg-green-50 border border-green-100"
+                }
+              `}
               >
-                👑 BOSS EVENT 👑
+                {isEventLocked(selectedEvent) ? (
+                  <p className="text-[var(--muted)] text-sm">
+                    🔒 Opens{" "}
+                    {selectedEvent.date?.toDate().toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                ) : (
+                  <p className="text-[var(--success)] text-sm font-medium">
+                    ✓ Open for registration
+                  </p>
+                )}
               </div>
-            )}
 
-            {/* Event details */}
-            <h2
-              className={`font-bold text-red-600 text-center ${
-                isMobile ? "text-xl mb-1" : "text-3xl mb-2"
-              }`}
-            >
-              {selectedEvent.name}
-            </h2>
-
-            <p
-              className={`text-gray-700 text-center leading-relaxed ${
-                isMobile ? "text-sm mb-3" : "mb-4"
-              }`}
-            >
-              {selectedEvent.description}
-            </p>
-
-            {selectedEvent.date && (
-              <div
-                className={`bg-red-100 rounded-xl border-2 border-red-300 ${
-                  isMobile ? "p-2 mb-3" : "p-3 mb-4"
-                }`}
-              >
-                <p
-                  className={`text-red-700 font-medium text-center ${
-                    isMobile ? "text-xs" : "text-sm"
-                  }`}
+              {/* CTA */}
+              {selectedEvent.formUrl && !isEventLocked(selectedEvent) && (
+                <a
+                  href={selectedEvent.formUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 rounded-xl bg-[var(--primary)] text-white font-semibold text-center hover:bg-[var(--primary-light)] transition-smooth shadow-md"
                 >
-                  📅{" "}
-                  {selectedEvent.date.toDate().toLocaleDateString("en-US", {
-                    weekday: isMobile ? undefined : "long",
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </p>
-              </div>
-            )}
-
-            {/* Lock status */}
-            {selectedEvent.date && new Date() < selectedEvent.date.toDate() ? (
-              <div
-                className={`bg-red-100 border-2 border-red-400 rounded-xl text-center ${
-                  isMobile ? "p-3 mb-3" : "p-4 mb-4"
-                }`}
-              >
-                <p
-                  className={`text-red-700 font-bold ${
-                    isMobile ? "text-sm" : ""
-                  }`}
-                >
-                  🔒 Unlocks {selectedEvent.date.toDate().toLocaleDateString()}
-                </p>
-              </div>
-            ) : (
-              <div
-                className={`bg-red-100 border-2 border-red-400 rounded-xl text-center ${
-                  isMobile ? "p-3 mb-3" : "p-4 mb-4"
-                }`}
-              >
-                <p
-                  className={`text-red-700 font-bold ${
-                    isMobile ? "text-sm" : ""
-                  }`}
-                >
-                  ✅ Event Available Now!
-                </p>
-              </div>
-            )}
-
-            {/* Sign-Up Button */}
-            {selectedEvent.formUrl && (
-              <a
-                href={selectedEvent.formUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`block w-full text-center bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg ${
-                  isMobile ? "px-4 py-2 text-sm" : "px-6 py-3 text-base"
-                }`}
-              >
-                🎫 Sign Up Now
-              </a>
-            )}
+                  Register Now
+                </a>
+              )}
+            </div>
           </div>
         </div>
       )}
-
-      {/* Scroll indicator - Mobile optimized */}
-      <div
-        className={`absolute left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border-2 border-red-300 ${
-          isMobile ? "bottom-2 px-4 py-2" : "bottom-6 px-6 py-3"
-        }`}
-      >
-        <p
-          className={`font-bold text-red-600 flex items-center gap-2 ${
-            isMobile ? "text-xs" : "text-sm"
-          }`}
-        >
-          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-500 opacity-75"></span>
-          <span className="relative">
-            {isMobile ? "← Swipe →" : "← Scroll to explore →"}
-          </span>
-        </p>
-      </div>
-
-      {/* Event Counter - Mobile optimized */}
-      <div
-        className={`absolute right-6 bg-gradient-to-r from-red-500 to-pink-500 backdrop-blur-sm rounded-full shadow-lg text-white ${
-          isMobile ? "bottom-2 px-3 py-1" : "bottom-6 px-4 py-2"
-        }`}
-      >
-        <p className={`font-bold ${isMobile ? "text-xs" : "text-sm"}`}>
-          {sortedEvents.length} Events
-        </p>
-      </div>
     </div>
   );
 }

@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import image from "../../public/acsc-logo.svg"
 
-const poppins = Poppins({ 
-  weight: ["400", "600", "700", "800"],
-  subsets: ["latin"] 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
-  title: "ACSC Events",
-  description: "Gamified event tracking for our school",
+  title: "ACSC Events | Your Semester Adventure",
+  description: "Explore and join ACSC events on your gamified journey",
+  icons: {
+    icon: "/acsc-logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -20,10 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="../public/acsc-logo.svg" />
-      </head>
-      <body className={`${poppins.className} antialiased`} suppressHydrationWarning>
+      <body
+        className={`${inter.variable} font-sans antialiased bg-[var(--background)]`}
+      >
         {children}
       </body>
     </html>

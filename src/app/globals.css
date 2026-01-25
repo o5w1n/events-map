@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* College brand colors */
+  --primary: #C93834;
+  --primary-light: #E85450;
+  --primary-muted: rgba(201, 56, 52, 0.08);
+  --primary-glow: rgba(201, 56, 52, 0.2);
+  
+  /* Neutral palette */
+  --background: #FAFAFA;
+  --foreground: #1A1A1A;
+  --muted: #4D5151;
+  --muted-light: #737373;
+  --border: #E5E5E5;
+  --card: #FFFFFF;
+  
+  /* Accent colors */
+  --gold: #F59E0B;
+  --success: #10B981;
+  --locked: #9CA3AF;
 }
 
 @theme inline {
+  --color-primary: var(--primary);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-card: var(--card);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-light);
+}
+
+/* Subtle glow */
+.glow-primary {
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Gentle hover lift */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Subtle float animation */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-float {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+/* Star twinkle */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* Path flow */
+@keyframes path-flow {
+  to { stroke-dashoffset: -30; }
+}
+
+.animate-path {
+  animation: path-flow 1.5s linear infinite;
+}
+
+/* Pulse ring for active */
+@keyframes ring-pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.animate-ring {
+  animation: ring-pulse 2s ease-out infinite;
+}
+
+/* Doodle pattern background */
+.doodle-bg {
+  background-image: 
+    radial-gradient(circle at 20% 30%, var(--primary-muted) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, var(--primary-muted) 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(77, 81, 81, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 60% 20%, rgba(77, 81, 81, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px, 80px 80px, 50px 50px, 70px 70px;
+}
+
+/* Decorative shapes */
+.decor-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed var(--border);
+  opacity: 0.4;
+}
+
+.decor-dots {
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
