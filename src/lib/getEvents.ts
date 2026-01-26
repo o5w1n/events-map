@@ -10,6 +10,8 @@ export interface Event {
   isBoss: boolean;
   formUrl?: string;
   emoji?: string; // Custom emoji from Firestore (optional)
+  isParent?: boolean; // True if this is a container event (e.g., ACSC WEEK)
+  parentId?: number; // Links sub-events to their parent event
 }
 
 export async function getEvents(): Promise<Event[]> {
@@ -39,6 +41,8 @@ export async function getEvents(): Promise<Event[]> {
         isBoss: data.isBoss || false,
         formUrl: data.formUrl || "",
         emoji: data.emoji || undefined, // Read emoji from Firestore if available
+        isParent: data.isParent || false, // Container event flag
+        parentId: data.parentId || undefined, // Parent reference for sub-events
       } as Event;
     });
 

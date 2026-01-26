@@ -182,7 +182,25 @@ export default function EventMap({ events }: EventMapProps) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const sortedEvents = [...events].sort((a, b) => a.id - b.id);
+  // Separate main roadmap events from child events
+  // Main events: events without a parentId (standalone or parent containers)
+  // Child events: events with a parentId (sub-events of ACSC WEEK, etc.)
+  const allSortedEvents = [...events].sort((a, b) => a.id - b.id);
+  const mainRoadmapEvents = allSortedEvents.filter((e) => !e.parentId);
+  const childEvents = allSortedEvents.filter((e) => e.parentId);
+
+  // Helper function to get child events for a parent
+  const getChildEvents = (parentId: number) => {
+    return childEvents
+      .filter((e) => e.parentId === parentId)
+      .sort((a, b) => {
+        // Sort by date if available
+        if (a.date && b.date) {
+          return a.date.toDate().getTime() - b.date.toDate().getTime();
+        }
+        return a.id - b.id;
+      });
+  };
 
   const spacing = isMobile ? 160 : 220;
   const nodeSize = isMobile ? 72 : 88;
@@ -203,17 +221,22 @@ export default function EventMap({ events }: EventMapProps) {
     return event.emoji || "✨";
   };
 
-  const pathD = sortedEvents
+  // Use mainRoadmapEvents for the path (not all events)
+  const pathD = mainRoadmapEvents
     .map((_, i) => {
       const { x, y } = getPosition(i);
       return `${i === 0 ? "M" : "L"} ${x} ${y}`;
     })
     .join(" ");
 
-  const totalWidth = sortedEvents.length * spacing + (isMobile ? 240 : 360);
+  const totalWidth =
+    mainRoadmapEvents.length * spacing + (isMobile ? 240 : 360);
   const containerHeight = isMobile ? 420 : 520;
 
-  const unlockedCount = sortedEvents.filter((e) => !isEventLocked(e)).length;
+  // Count unlocked from main roadmap events only
+  const unlockedCount = mainRoadmapEvents.filter(
+    (e) => !isEventLocked(e),
+  ).length;
 
   // Available doodles
   const Doodles = [
@@ -240,7 +263,7 @@ export default function EventMap({ events }: EventMapProps) {
               Semester Roadmap
             </p>
             <p className="text-xs text-[var(--muted)]">
-              {sortedEvents.length} events planned
+              {mainRoadmapEvents.length} events planned
             </p>
           </div>
         </div>
@@ -252,7 +275,10 @@ export default function EventMap({ events }: EventMapProps) {
               <span
                 key={star}
                 className={`text-sm ${
-                  star <= Math.ceil((unlockedCount / sortedEvents.length) * 3) ?
+                  (
+                    star <=
+                    Math.ceil((unlockedCount / mainRoadmapEvents.length) * 3)
+                  ) ?
                     "text-[var(--gold)] animate-twinkle"
                   : "text-[var(--border)]"
                 }`}
@@ -267,7 +293,7 @@ export default function EventMap({ events }: EventMapProps) {
               {unlockedCount}
             </span>
             <span className="text-sm text-[var(--muted)]">
-              /{sortedEvents.length}
+              /{mainRoadmapEvents.length}
             </span>
           </div>
         </div>
@@ -286,7 +312,7 @@ export default function EventMap({ events }: EventMapProps) {
           {/* BACKGROUND DOODLES LAYER */}
           {/* Dynamically generates doodles along the entire width based on events */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {sortedEvents.map((_, i) => {
+            {mainRoadmapEvents.map((_: Event, i: number) => {
               // Render 4 doodles around each event position for more density
               const doodlesForSegment = [0, 1, 2, 3].map((offset) => {
                 const seed = i * 13 + offset;
@@ -364,7 +390,7 @@ export default function EventMap({ events }: EventMapProps) {
 
           {/* Event Nodes */}
           <div className="relative w-full h-full" style={{ zIndex: 2 }}>
-            {sortedEvents.map((event, index) => {
+            {mainRoadmapEvents.map((event: Event, index: number) => {
               const position = getPosition(index);
               const locked = isEventLocked(event);
 
@@ -414,6 +440,15 @@ export default function EventMap({ events }: EventMapProps) {
                         <span className="text-[10px]">👑</span>
                       </div>
                     )}
+
+                    {/* Parent event indicator (e.g., ACSC WEEK with multiple activities) */}
+                    {event.isParent && getChildEvents(event.id).length > 0 && (
+                      <div className="absolute -top-2 -left-1 min-w-5 h-5 px-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center shadow-sm">
+                        <span className="text-[10px] text-white font-bold">
+                          {getChildEvents(event.id).length}
+                        </span>
+                      </div>
+                    )}
                   </button>
 
                   {/* Label */}
@@ -430,6 +465,14 @@ export default function EventMap({ events }: EventMapProps) {
                     >
                       {event.name}
                     </p>
+                    {/* Show activity count under parent events */}
+                    {event.isParent && getChildEvents(event.id).length > 0 && (
+                      <p
+                        className={`text-[10px] ${locked ? "text-[var(--muted-light)]" : "text-[var(--muted)]"}`}
+                      >
+                        {getChildEvents(event.id).length} activities
+                      </p>
+                    )}
                   </div>
                 </div>
               );
@@ -522,7 +565,7 @@ export default function EventMap({ events }: EventMapProps) {
             </div>
 
             {/* Content */}
-            <div className="px-6 py-5 -mt-4 bg-[var(--card)] rounded-t-2xl relative">
+            <div className="px-6 py-5 -mt-4 bg-[var(--card)] rounded-t-2xl relative max-h-[60vh] overflow-y-auto">
               <h2 className="text-lg font-bold text-[var(--foreground)] text-center mb-2">
                 {selectedEvent.name}
               </h2>
@@ -544,33 +587,122 @@ export default function EventMap({ events }: EventMapProps) {
                 </div>
               )}
 
-              {/* Status */}
-              <div
-                className={`
-                rounded-xl p-4 text-center mb-4
-                ${
-                  isEventLocked(selectedEvent) ?
-                    "bg-[var(--background)] border border-[var(--border)]"
-                  : "bg-green-50 border border-green-100"
-                }
-              `}
-              >
-                {isEventLocked(selectedEvent) ?
-                  <p className="text-[var(--muted)] text-sm">
-                    🔒 Opens{" "}
-                    {selectedEvent.date?.toDate().toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
-                : <p className="text-[var(--success)] text-sm font-medium">
-                    ✓ Open for registration
-                  </p>
-                }
-              </div>
+              {/* If this is a Parent Event with children, show them */}
+              {selectedEvent.isParent &&
+                getChildEvents(selectedEvent.id).length > 0 && (
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm font-semibold text-[var(--foreground)]">
+                        🎉 Activities ({getChildEvents(selectedEvent.id).length}
+                        )
+                      </span>
+                    </div>
 
-              {/* CTA */}
-              {selectedEvent.formUrl && (
+                    {
+                      isEventLocked(selectedEvent) ?
+                        // Locked: Show teaser without details
+                        <div className="space-y-2">
+                          {getChildEvents(selectedEvent.id).map((child) => (
+                            <div
+                              key={child.id}
+                              className="flex items-center gap-3 p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] opacity-60"
+                            >
+                              <span className="text-lg">🔒</span>
+                              <span className="text-sm text-[var(--muted)] font-medium">
+                                ???
+                              </span>
+                            </div>
+                          ))}
+                          <p className="text-center text-xs text-[var(--muted)] mt-3">
+                            Unlock on{" "}
+                            {selectedEvent.date
+                              ?.toDate()
+                              .toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                              })}{" "}
+                            to see all activities
+                          </p>
+                        </div>
+                        // Unlocked: Show all child events
+                      : <div className="space-y-2">
+                          {getChildEvents(selectedEvent.id).map((child) => (
+                            <div
+                              key={child.id}
+                              className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-[var(--primary)] transition-smooth"
+                            >
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <span className="text-lg flex-shrink-0">
+                                  {getEventEmoji(child)}
+                                </span>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-[var(--foreground)] truncate">
+                                    {child.name}
+                                  </p>
+                                  {child.date && (
+                                    <p className="text-xs text-[var(--muted)]">
+                                      {child.date
+                                        .toDate()
+                                        .toLocaleDateString("en-US", {
+                                          weekday: "short",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              {child.formUrl && (
+                                <a
+                                  href={child.formUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-[var(--primary)] text-white text-xs font-medium hover:bg-[var(--primary-light)] transition-smooth"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Register
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                    }
+                  </div>
+                )}
+
+              {/* Status - only show for non-parent events OR parent events without children */}
+              {(!selectedEvent.isParent ||
+                getChildEvents(selectedEvent.id).length === 0) && (
+                <div
+                  className={`
+                  rounded-xl p-4 text-center mb-4
+                  ${
+                    isEventLocked(selectedEvent) ?
+                      "bg-[var(--background)] border border-[var(--border)]"
+                    : "bg-green-50 border border-green-100"
+                  }
+                `}
+                >
+                  {isEventLocked(selectedEvent) ?
+                    <p className="text-[var(--muted)] text-sm">
+                      🔒 Opens{" "}
+                      {selectedEvent.date
+                        ?.toDate()
+                        .toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                    </p>
+                  : <p className="text-[var(--success)] text-sm font-medium">
+                      ✓ Open for registration
+                    </p>
+                  }
+                </div>
+              )}
+
+              {/* CTA - only for non-parent events with formUrl */}
+              {selectedEvent.formUrl && !selectedEvent.isParent && (
                 <a
                   href={selectedEvent.formUrl}
                   target="_blank"
