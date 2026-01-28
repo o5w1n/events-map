@@ -80,9 +80,9 @@ export default function MapPage() {
                 <Image
                   src="/acsc-logo.svg"
                   alt="ACSC Logo"
-                  width={56}
-                  height={56}
+                  fill
                   className="object-contain drop-shadow-sm"
+                  sizes="56px"
                 />
               </div>
               <div>
