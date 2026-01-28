@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  /* College brand colors */
-  --primary: #C93834;
-  --primary-light: #E85450;
-  --primary-muted: rgba(201, 56, 52, 0.08);
-  --primary-glow: rgba(201, 56, 52, 0.2);
-  
-  /* Neutral palette */
-  --background: #FAFAFA;
-  --foreground: #1A1A1A;
-  --muted: #4D5151;
-  --muted-light: #737373;
-  --border: #E5E5E5;
-  --card: #FFFFFF;
-  
+  /* College brand colors - Kept distinct */
+  --primary: #c93834;
+  --primary-light: #e85450;
+  --primary-muted: rgba(201, 56, 52, 0.1);
+  --primary-glow: rgba(201, 56, 52, 0.15);
+
+  /* Warm / Paper Map Palette */
+  --background: #f2f0e9; /* Warm beige/parchment */
+  --foreground: #2d2a26; /* Dark charcoal/brown for text */
+  --muted: #6b665e; /* Warm grey */
+  --muted-light: #948f85;
+  --border: #d6d2c9; /* Tan border */
+  --card: #fdfbf7; /* Off-white paper card */
+
   /* Accent colors */
-  --gold: #F59E0B;
-  --success: #10B981;
-  --locked: #9CA3AF;
+  --gold: #d97706; /* Slightly deeper gold for contrast */
+  --success: #059669; /* Natural green */
+  --locked: #a8a29d;
 }
 
 @theme inline {
@@ -37,7 +37,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -73,7 +77,9 @@ body {
 
 /* Gentle hover lift */
 .hover-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .hover-lift:hover {
@@ -83,8 +89,13 @@ body {
 
 /* Subtle float animation */
 @keyframes gentle-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .animate-float {
@@ -93,8 +104,13 @@ body {
 
 /* Star twinkle */
 @keyframes twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .animate-twinkle {
@@ -103,7 +119,9 @@ body {
 
 /* Path flow */
 @keyframes path-flow {
-  to { stroke-dashoffset: -30; }
+  to {
+    stroke-dashoffset: -30;
+  }
 }
 
 .animate-path {
@@ -112,8 +130,14 @@ body {
 
 /* Pulse ring for active */
 @keyframes ring-pulse {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.4); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
 }
 
 .animate-ring {
@@ -122,12 +146,32 @@ body {
 
 /* Doodle pattern background */
 .doodle-bg {
-  background-image: 
-    radial-gradient(circle at 20% 30%, var(--primary-muted) 1px, transparent 1px),
-    radial-gradient(circle at 80% 70%, var(--primary-muted) 1px, transparent 1px),
-    radial-gradient(circle at 40% 80%, rgba(77, 81, 81, 0.05) 1px, transparent 1px),
-    radial-gradient(circle at 60% 20%, rgba(77, 81, 81, 0.05) 1px, transparent 1px);
-  background-size: 60px 60px, 80px 80px, 50px 50px, 70px 70px;
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      var(--primary-muted) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      var(--primary-muted) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(77, 81, 81, 0.05) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 60% 20%,
+      rgba(77, 81, 81, 0.05) 1px,
+      transparent 1px
+    );
+  background-size:
+    60px 60px,
+    80px 80px,
+    50px 50px,
+    70px 70px;
 }
 
 /* Decorative shapes */
