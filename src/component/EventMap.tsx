@@ -218,6 +218,13 @@ export default function EventMap({ events }: EventMapProps) {
     return event.isUnlocked !== true;
   };
 
+  const isEventPassed = (event: Event) => {
+    // Event has passed if: it's unlocked AND the event date is in the past
+    if (isEventLocked(event)) return false;
+    if (!event.date) return false;
+    return new Date() > event.date.toDate();
+  };
+
   const getEventEmoji = (event: Event) => {
     return event.emoji || "✨";
   };
@@ -447,6 +454,15 @@ export default function EventMap({ events }: EventMapProps) {
                       <div className="absolute -top-2 -left-1 min-w-5 h-5 px-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center shadow-sm">
                         <span className="text-[10px] text-white font-bold">
                           {getChildEvents(event.id).length}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Passed event indicator (red X badge) */}
+                    {isEventPassed(event) && (
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center shadow-sm border-2 border-white">
+                        <span className="text-[10px] text-white font-bold">
+                          ✕
                         </span>
                       </div>
                     )}
@@ -681,19 +697,19 @@ export default function EventMap({ events }: EventMapProps) {
                   ${
                     isEventLocked(selectedEvent) ?
                       "bg-[var(--background)] border border-[var(--border)]"
+                    : isEventPassed(selectedEvent) ?
+                      "bg-red-50 border border-red-100"
                     : "bg-green-50 border border-green-100"
                   }
                 `}
                 >
                   {isEventLocked(selectedEvent) ?
                     <p className="text-[var(--muted)] text-sm">
-                      🔒 Opens{" "}
-                      {selectedEvent.date
-                        ?.toDate()
-                        .toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
+                      🔒 Registration opens soon
+                    </p>
+                  : isEventPassed(selectedEvent) ?
+                    <p className="text-red-500 text-sm font-medium">
+                      ✕ This event has passed
                     </p>
                   : <p className="text-[var(--success)] text-sm font-medium">
                       ✓ Open for registration
@@ -702,17 +718,19 @@ export default function EventMap({ events }: EventMapProps) {
                 </div>
               )}
 
-              {/* CTA - only for non-parent events with formUrl */}
-              {selectedEvent.formUrl && !selectedEvent.isParent && (
-                <a
-                  href={selectedEvent.formUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 rounded-xl bg-[var(--primary)] text-white font-semibold text-center hover:bg-[var(--primary-light)] transition-smooth shadow-md"
-                >
-                  Register Now
-                </a>
-              )}
+              {/* CTA - only for non-parent events with formUrl that haven't passed */}
+              {selectedEvent.formUrl &&
+                !selectedEvent.isParent &&
+                !isEventPassed(selectedEvent) && (
+                  <a
+                    href={selectedEvent.formUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-3 rounded-xl bg-[var(--primary)] text-white font-semibold text-center hover:bg-[var(--primary-light)] transition-smooth shadow-md"
+                  >
+                    Register Now
+                  </a>
+                )}
             </div>
           </div>
         </div>
