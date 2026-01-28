@@ -65,7 +65,7 @@ export default function MapPage() {
   }
 
   const unlockedCount = events.filter(
-    (e) => !e.date || new Date() >= e.date.toDate()
+    (e) => !e.date || new Date() >= e.date.toDate(),
   ).length;
 
   return (
@@ -78,7 +78,7 @@ export default function MapPage() {
             <div className="flex items-center gap-4">
               <div className="relative w-14 h-14 hover:scale-105 transition-transform duration-300">
                 <Image
-                  src="/ACity Logo NW copy-2.png"
+                  src="/acsc-logo.svg"
                   alt="ACSC Logo"
                   width={56}
                   height={56}
@@ -87,7 +87,8 @@ export default function MapPage() {
               </div>
               <div>
                 <h1 className="text-xl md:text-2xl font-black text-[var(--foreground)] tracking-tight">
-                  ACSC Event <span className="text-[var(--primary)]">Roadmap</span>
+                  ACSC Event{" "}
+                  <span className="text-[var(--primary)]">Roadmap</span>
                 </h1>
                 <p className="text-[var(--muted)] text-sm font-medium">
                   By ACity Student Council
@@ -123,7 +124,7 @@ export default function MapPage() {
       {/* Map */}
       <section className="px-4 md:px-6 pb-8">
         <div className="max-w-5xl mx-auto">
-          {events.length === 0 ? (
+          {events.length === 0 ?
             <div className="text-center py-16 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
               <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[var(--background)] flex items-center justify-center">
                 <span className="text-3xl">📭</span>
@@ -135,9 +136,7 @@ export default function MapPage() {
                 Check back soon for upcoming events!
               </p>
             </div>
-          ) : (
-            <EventMap events={events} />
-          )}
+          : <EventMap events={events} />}
         </div>
       </section>
 
