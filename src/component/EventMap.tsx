@@ -213,8 +213,9 @@ export default function EventMap({ events }: EventMapProps) {
   };
 
   const isEventLocked = (event: Event) => {
-    if (!event.date) return false;
-    return new Date() < event.date.toDate();
+    // Registration-based unlock: event is locked unless isUnlocked is true
+    // The date field is now just for display (when the event happens), not for unlocking
+    return event.isUnlocked !== true;
   };
 
   const getEventEmoji = (event: Event) => {

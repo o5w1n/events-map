@@ -12,6 +12,7 @@ export interface Event {
   emoji?: string; // Custom emoji from Firestore (optional)
   isParent?: boolean; // True if this is a container event (e.g., ACSC WEEK)
   parentId?: number; // Links sub-events to their parent event
+  isUnlocked?: boolean; // When true, event is open for registration (overrides date-based unlock)
 }
 
 export async function getEvents(): Promise<Event[]> {
@@ -43,6 +44,7 @@ export async function getEvents(): Promise<Event[]> {
         emoji: data.emoji || undefined, // Read emoji from Firestore if available
         isParent: data.isParent || false, // Container event flag
         parentId: data.parentId || undefined, // Parent reference for sub-events
+        isUnlocked: data.isUnlocked || false, // Registration-based unlock (default: locked)
       } as Event;
     });
 
