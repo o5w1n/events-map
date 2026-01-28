@@ -401,6 +401,7 @@ export default function EventMap({ events }: EventMapProps) {
             {mainRoadmapEvents.map((event: Event, index: number) => {
               const position = getPosition(index);
               const locked = isEventLocked(event);
+              const passed = isEventPassed(event);
 
               return (
                 <div
@@ -408,8 +409,8 @@ export default function EventMap({ events }: EventMapProps) {
                   className="absolute transform -translate-x-1/2 -translate-y-1/2"
                   style={{ left: position.x, top: position.y }}
                 >
-                  {/* Pulse ring for unlocked */}
-                  {!locked && (
+                  {/* Pulse ring for unlocked (not passed) */}
+                  {!locked && !passed && (
                     <div
                       className="absolute inset-0 rounded-full bg-[var(--primary)] animate-ring"
                       style={{ width: nodeSize, height: nodeSize }}
@@ -425,9 +426,11 @@ export default function EventMap({ events }: EventMapProps) {
                       ${
                         locked ?
                           "bg-[var(--background)] border-[var(--border)] opacity-60"
+                        : passed ?
+                          "bg-[var(--background)] border-[var(--border)] opacity-50 grayscale"
                         : "bg-[var(--card)] border-[var(--primary)] hover:scale-105 shadow-md glow-primary"
                       }
-                      ${!locked && "animate-float"}
+                      ${!locked && !passed && "animate-float"}
                     `}
                     style={{
                       width: nodeSize,
@@ -438,7 +441,11 @@ export default function EventMap({ events }: EventMapProps) {
                     {locked ?
                       <span className="text-2xl opacity-50">🔒</span>
                     : <>
-                        <span className="text-2xl">{getEventEmoji(event)}</span>
+                        <span
+                          className={`text-2xl ${passed ? "opacity-60" : ""}`}
+                        >
+                          {getEventEmoji(event)}
+                        </span>
                       </>
                     }
 
@@ -458,12 +465,10 @@ export default function EventMap({ events }: EventMapProps) {
                       </div>
                     )}
 
-                    {/* Passed event indicator (red X badge) */}
-                    {isEventPassed(event) && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center shadow-sm border-2 border-white">
-                        <span className="text-[10px] text-white font-bold">
-                          ✕
-                        </span>
+                    {/* Passed event indicator (red X badge - larger and more visible) */}
+                    {passed && (
+                      <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-red-500 flex items-center justify-center shadow-lg border-2 border-white">
+                        <span className="text-sm text-white font-bold">✕</span>
                       </div>
                     )}
                   </button>
